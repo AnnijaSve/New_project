@@ -1,0 +1,34 @@
+<?php declare(strict_types=1);
+
+class Person
+{
+    protected  string $name;
+    protected ?string $secondName;
+    protected string $surname;
+
+    public function __construct(string $name,string $secondName = null,string $surname)
+    {
+        $this->name = $name;
+        $this->secondName = $secondName;
+        $this->surname = $surname;
+    }
+    public function secondName(): ?string
+    {
+        return $this->secondName;
+    }
+    public function name(): string
+    {
+        return $this->name;
+    }
+    public function surname(): string
+    {
+        return $this->surname;
+    }
+
+}
+
+$person = new Person ('Annija', '','Švegžda');
+$person2 = new Person( 'Jānis', '','Bērziņš');
+$person3 = new Person ('Līga' , 'Zane', 'Bērziņa');
+
+var_dump($person, $person2,$person3);
