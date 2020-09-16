@@ -1,0 +1,56 @@
+<?php
+class  cars
+{
+    private  string $name;
+    private int $liters;
+
+    public function __construct(string $name, int $liters)
+{
+    $this->name = $name;
+    $this->liters = $liters;
+}
+public function name(): string
+{
+    return $this->name;
+}
+public function liters(): int
+{
+    return $this->liters;
+}
+}
+class BMW extends cars
+{
+   public function bmwFunction(): string
+   {
+       return 'Automatic locking';
+   }
+}
+class Audi extends cars
+{
+    public function audiFunction(): string
+    {
+        return 'Nice colour';
+    }
+
+}
+$cars = [
+    new cars('Sister`s car',40),
+    new BMW('My Car', 45),
+    new Audi('Brothers car', 50)
+
+
+];
+    foreach($cars as $car)
+    {
+        echo $car->name() . " " . $car->liters() ,PHP_EOL ;
+
+        if ($car instanceof BMW)
+        {
+            echo $car->bmwFunction() ,PHP_EOL ;
+        }
+        if ($car instanceof Audi)
+        {
+            echo $car->audiFunction() ,PHP_EOL ;
+        }
+    }
+    ?>
