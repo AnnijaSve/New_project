@@ -1,32 +1,67 @@
 <?php
 
-require_once __DIR__.'/app/Spice.php';
-require_once __DIR__ .'/app/SpiceCollection.php';
+require_once 'Display.php';
+require_once 'Game.php';
 
-foreach (glob('app/Spices/*.php') as $filename){
-    require_once $filename;
+
+$display = new Display();
+
+$game = new Game();
+
+$table = $display->setCells();
+
+
+foreach ($table as $key => $cells) {
+    if (count($table) == 3) {
+        echo PHP_EOL;
+    }
+    echo implode(" ", $cells), PHP_EOL;
 }
 
-//require_once 'app/Spice.php';
-//require_once 'app/SpiceCollection.php';
-//require_once 'app/Spices/Pepper.php';
-//require_once 'app/Spices/Salt.php';
-//require_once 'app/Spices/Oregano.php';
-
-use App\Spice;
-use App\SpiceCollection;
-use App\Spices\Pepper;
-use App\Spices\Salt;
-use App\Spices\Oregano;
+while ($game->getWinsX($cells) == false || $game->getWinsO($cells) == false) {
 
 
-$spices = new SpiceCollection();
-$spices->add(new Salt());
-$spices->add(new Pepper());
-$spices->add(new Oregano());
-foreach ($spices->all() as $spice) {
-    /** @var Spice $spice */
-    echo $spice->getName() . ' ' . $spice->getTaste() . PHP_EOL;
+    $x = readline("Player X Enter first number");
+    $y = readline("Player X Enter second number");
+
+    $stepX = $table[$x][$y];
+
+    $game->addStepsX($stepX);
+
+    $game->loadAllStepsX($stepX);
+
+    $allStepsX = $game->getAllStepsX();
+
+    $game->storeAllStepsX($allStepsX);
+
+    $game->getAllStepsX();
+
+
+    $a = readline("Player O Enter first number");
+    $b = readline("Player O Enter second number");
+
+    $stepO = $table[$a][$b];
+
+    $game->addStepsO($stepO);
+
+    $game->loadAllStepsO($stepO);
+
+    $allStepsO = $game->getAllStepsO();
+
+    $game->storeAllStepsO($allStepsO);
+
+    $game->getAllStepsO();
+
+
+    foreach ($table as $key => $cells) {
+        if (count($table) == 3) {
+
+            echo PHP_EOL;
+        }
+
+        $o = implode(" ", str_replace($game->getAllStepsX(), "  X ", $cells)) . PHP_EOL;
+        echo str_ireplace($game->getAllStepsO(), "  0 ", $o);
+    }
+
 }
-
 
