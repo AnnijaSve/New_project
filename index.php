@@ -1,32 +1,29 @@
 <?php
-
-require_once __DIR__.'/app/Spice.php';
-require_once __DIR__ .'/app/SpiceCollection.php';
-
-foreach (glob('app/Spices/*.php') as $filename){
-    require_once $filename;
-}
-
-//require_once 'app/Spice.php';
-//require_once 'app/SpiceCollection.php';
-//require_once 'app/Spices/Pepper.php';
-//require_once 'app/Spices/Salt.php';
-//require_once 'app/Spices/Oregano.php';
-
-use App\Spice;
-use App\SpiceCollection;
-use App\Spices\Pepper;
-use App\Spices\Salt;
-use App\Spices\Oregano;
+require_once 'StorageInterface.php';
+require_once 'NumberGenerator.php';
+require_once 'StoreNumbers.php';
 
 
-$spices = new SpiceCollection();
-$spices->add(new Salt());
-$spices->add(new Pepper());
-$spices->add(new Oregano());
-foreach ($spices->all() as $spice) {
-    /** @var Spice $spice */
-    echo $spice->getName() . ' ' . $spice->getTaste() . PHP_EOL;
-}
+
+$storeNumbers = new StoreNumbers('Storage.txt');
+
+$numberGenerator = new NumberGenerator($storeNumbers, 1,100);
+
+$randomNumber = $numberGenerator->getNumber();
+
+$numberGenerator->add($randomNumber);
+
+$allNumbers = $numberGenerator->getAllNumbers();
+
+$numberGenerator->save();
+
+
+echo 'All numbers : ' . implode(' ', $numberGenerator->getAllNumbers());
+echo PHP_EOL;
+echo 'New number : ' . $randomNumber;
+echo PHP_EOL;
+echo 'Average : ' . $numberGenerator->getAverage();
+echo PHP_EOL;
+
 
 
