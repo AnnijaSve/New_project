@@ -61,7 +61,7 @@ if (isset($_POST['delete'])) {
 </style>
 <body>
 <ul>
-    <form action="index.php" method="post">
+    <form action="index5.php" method="post">
         <input type="text" name="task" id='task'>
         <button class="a" type="submit">Add task</button>
     </form>
@@ -70,7 +70,7 @@ if (isset($_POST['delete'])) {
     <?php foreach ($todos as $id => $todo): ?>
         <li>
             <?php echo $todo; ?>
-            <form method="post" action="index.php">
+            <form method="post" action="index4.php">
                 <input type="hidden" name="id" value="<?php echo $id; ?>"/>
                 <button class="b" type="submit" name="delete">X</button>
             </form>
