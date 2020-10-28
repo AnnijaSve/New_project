@@ -13,7 +13,7 @@ $searchForPerson = $_POST['searchperson'] ?? '';
 <body>
 <hr>
 <center>
-    <form action="index.php" method="post">
+    <form action="index1.php" method="post">
         <label for="searchperson">Search person</label>
         <input type="text" name="searchperson" id='searcherson'>
         <button type="submit">Search</button>
