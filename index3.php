@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Person.php';
+require_once 'Person1.php';
 require_once 'StorePersons.php';
 
 $storePersons = new StorePersons();
@@ -32,7 +32,7 @@ $searchForPerson = $_POST['searchperson'] ?? '';
     }
 </style>
 <body>
-<form action="index.php" method="post">
+<form action="index3.php" method="post">
     <pre>
         <label class="r" for="name">Name</label>
         <input type="text" name="name" id='name'>
@@ -51,7 +51,7 @@ $searchForPerson = $_POST['searchperson'] ?? '';
 </form>
 <hr>
 <center>
-<form action="index.php" method="post">
+<form action="index3.php" method="post">
     <label for="searchperson">Search person</label>
     <input type="text" name="searchperson" id='searcherson'>
     <button type="submit">Search</button>
