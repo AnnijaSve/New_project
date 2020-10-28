@@ -34,7 +34,7 @@ if (isset($_POST['dislike'])) {
 </style>
 <body>
 <img src="https://pleasureinlearning.files.wordpress.com/2015/04/sunglasssmiley.jpg" width="300" height="300">
-<form action="index.php" method="post">
+<form action="index5.php" method="post">
     <p><?php echo "Likes: " . count($likes), PHP_EOL; ?></p>
     <button type="submit" name="like" value="1">Like</button>
     <button type="submit" name="dislike">Dislike</button>
