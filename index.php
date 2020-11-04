@@ -1,145 +1,92 @@
 <?php
 
+require 'vendor/autoload.php';
 
-require_once 'ElementInterface.php';
-require_once 'AbstractElement.php';
-require_once './Results/Result.php';
-require_once './Results/LoseResult.php';
-require_once './Results/WinResult.php';
-require_once './Results/TieResult.php';
-require_once 'Paper.php';
-require_once 'Rock.php';
-require_once 'Scissors.php';
-require_once 'Lizard.php';
-require_once 'Spock.php';
-require_once 'Computer.php';
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
+use Doctrine\DBAL\Query\QueryBuilder;
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->load();
 
-$paper = new Paper();
-$rock = new Rock();
-$scissors = new Scissors();
-$lizard = new Lizard();
-$spock = new Spock();
-$computer = new Computer($rock, $scissors, $paper, $lizard, $spock);
+// TODO Make this look better
+function database(): Connection
+{
+    $connectionParams = [
+        'dbname' => $_ENV['DB_DATABASE'],
+        'user' => $_ENV['DB_USER'],
+        'password' => $_ENV['DB_PASSWORD'],
+        'host' => $_ENV['DB_HOST'],
+        'driver' => 'pdo_mysql',
+    ];
 
-$computerRand= $computer->getRand($paper, $rock, $scissors, $lizard, $spock);
-$myChoice = $_GET['myChoice'];
+    $connection = DriverManager::getConnection($connectionParams);
+    $connection->connect();
 
-?>
-<!DOCTYPE html>
-<html>
-<head>
+    return $connection;
+}
 
-    <?php require_once "index.php"; ?>
-</head>
-<style>
-    button.b1 {
-        font-size: 20px;
-        background-color:#4dff4d;
+function query(): QueryBuilder
+{
+    return database()->createQueryBuilder();
+}
+
+$input = file_get_contents('https://www.bank.lv/vk/ecb.xml');
+
+$service = new \Sabre\Xml\Service();
+$service->elementMap = [
+    '{https://www.bank.lv/vk/ecb.xml}Currency' => 'Sabre\Xml\Element\KeyValue',
+];
+
+$result = $service->parse($input);
+
+foreach ($result[1]['value'] as $item) {
+    $name = $item['value'][0]['value'];
+    $value = $item['value'][1]['value'];
+
+    $currencyQuery = query()
+        ->select('*')
+        ->from('Currency')
+        ->where('name = :name')
+        ->setParameter('name', $name)
+        ->execute()
+        ->fetchAssociative();
+
+    if ($currencyQuery['name']) {
+        query()
+            ->update('Currency')
+            ->set('value', ':value')
+            ->setParameters([
+                'value' => $value,
+            ])
+            ->where('name = :name')
+            ->setParameter('name', $name)
+            ->execute();
+
+    } else {
+        query()
+            ->insert('Currency')
+            ->values([
+                'name' => ':name',
+                'value' => ':value'
+            ])
+            ->setParameters([
+                'name' => $name,
+                'value' => $value,
+            ])
+            ->execute();
     }
-</style>
-<body>
-<div class="container">
-    <center> <h1>
-            <?php
-            switch ($myChoice) {
-                case('$scissors'):
-                    $result = $scissors->beats($computerRand);
-                    echo 'You : ' . $result->getMessage();
-                    break;
-                case('$rock'):
-                    $result = $rock->beats($computerRand);
-                    echo 'You : ' . $result->getMessage();
-                    break;
-                case('$paper'):
-                    $result = $paper->beats($computerRand);
-                    echo 'You : ' . $result->getMessage();
-                    break;
-                case('$lizard'):
-                    $result = $lizard->beats($computerRand);
-                    echo 'You : ' . $result->getMessage();
-                    break;
-                case('$spock'):
-                    $result = $spock->beats($computerRand);
-                    echo 'You : ' . $result->getMessage();
-                    break;
-            }
-            ?>
-        </h1>
-    </center>
+}
 
-    <center>
-    <h2 style="background-color:#b3ffb3;">
-        <?php
-        switch ($computerRand){
-            case($scissors):
-                echo 'Computer choice : scissors';
-                break;
-            case($paper):
-                echo 'Computer choice : paper';
-                break;
-            case($rock):
-                echo 'Computer choice : rock';
-                break;
-            case($lizard):
-                echo 'Computer choice :lizard';
-                break;
-            case($spock):
-                echo 'Computer choice : spock';
-                break;
-        }
-        ?>
-    </h2>
-    </center>
+$currencyQuery = query()
+    ->select('*')
+    ->from('Currency')
+    ->execute()
+    ->fetchAllAssociative();
 
-    <h2><center> VS </center></h2>
+$currency = [];
 
-<center>
-    <h2 style="background-color:#b3ffb3;">
-
-        <?php
-        switch ($myChoice){
-            case('$scissors'):
-                echo 'Your choice : scissors';
-                echo PHP_EOL;
-                break;
-            case('$paper'):
-                echo 'Your choice : paper';
-                echo PHP_EOL;
-                break;
-            case('$rock'):
-                echo 'Your choice :  rock';
-                echo PHP_EOL;
-                break;
-            case('$lizard'):
-                echo 'Your choice : lizard';
-                echo PHP_EOL;
-                break;
-            case('$spock'):
-                echo 'Your choice : spock';
-                echo PHP_EOL;
-                break;
-        }
-        ?>
-    </h2>
-</center>
-
-<h1>
-
-    <center>
-        <form method="get">
-            <button class="b1" value=$rock name="myChoice">Rock</button>
-            <button class="b1" value=$paper name="myChoice">Paper</button>
-            <button class="b1" value=$scissors name="myChoice">Scissors</button>
-            <button class="b1" value=$lizard name="myChoice">Lizard</button>
-            <button class="b1" value=$spock name="myChoice">Spock</button>
-        </form>
-    </center>
-
-</h1>
-    <pre>
-</pre>
-</div>
-</body>
-</html>
-
+foreach ($currencyQuery as $currency) {
+    echo $currency['name'] . PHP_EOL;
+    echo $currency['value'] . PHP_EOL;
+}
